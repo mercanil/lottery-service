@@ -45,7 +45,7 @@ class TicketServiceTest {
 
 
     @Test
-    public void generate_ticket_expect_success() {
+    void generate_ticket_expect_success() {
 
         //given
         int numberOfLines = 1;
@@ -64,7 +64,7 @@ class TicketServiceTest {
     }
 
     @Test
-    public void update_ticket_expect_success() {
+    void update_ticket_expect_success() {
 
         //given
         int numberOfLines = 1;
@@ -85,7 +85,7 @@ class TicketServiceTest {
     }
 
     @Test
-    public void update_ticket_expect_exception_when_ticket_is_not_found() {
+    void update_ticket_expect_exception_when_ticket_is_not_found() {
 
         //given
         int numberOfLines = 1;
@@ -95,8 +95,10 @@ class TicketServiceTest {
         given(mockTicketRepository.findById(invalidId)).willReturn(Optional.empty());
 
 
-        //then
-        Assertions.assertThrows(TicketNotFoundException.class, () -> classUnderTest.updateTicket(storedTicket.getId(), additionalLine));
+        //when then
+        long storedTicketId = storedTicket.getId();
+        Assertions.assertThrows(TicketNotFoundException.class, () -> classUnderTest.updateTicket(storedTicketId, additionalLine));
+
         verify(mockTicketRepository).findById(invalidId);
         verify(mockTicketRepository, never()).save(any());
         verify(mockLineGenerator, never()).generateLine();
@@ -105,7 +107,7 @@ class TicketServiceTest {
 
 
     @Test
-    public void update_ticket_expect_exception_when_ticket_is_already_checked() {
+    void update_ticket_expect_exception_when_ticket_is_already_checked() {
 
         //given
         int numberOfLines = 1;
@@ -117,7 +119,8 @@ class TicketServiceTest {
 
 
         // when then
-        Assertions.assertThrows(TicketCheckedException.class, () -> classUnderTest.updateTicket(storedTicket.getId(), additionalLine));
+        long storedTicketId = storedTicket.getId();
+        Assertions.assertThrows(TicketCheckedException.class, () -> classUnderTest.updateTicket(storedTicketId, additionalLine));
         verify(mockTicketRepository).findById(invalidId);
         verify(mockTicketRepository, never()).save(any());
         verify(mockLineGenerator, never()).generateLine();
@@ -126,7 +129,7 @@ class TicketServiceTest {
 
 
     @Test
-    public void check_ticket_expect_success() {
+    void check_ticket_expect_success() {
 
         //given
         int numberOfLines = 1;
@@ -147,7 +150,7 @@ class TicketServiceTest {
 
 
     @Test
-    public void check_ticket_expect_exception_when_ticket_is_not_found() {
+    void check_ticket_expect_exception_when_ticket_is_not_found() {
 
         //given
         long invalidId = 1;

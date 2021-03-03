@@ -4,7 +4,7 @@ import com.mercan.lottery.entity.TicketLine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 @Component
 public class RandomValueLineGenerator implements LineGeneratorStrategy {
@@ -15,7 +15,7 @@ public class RandomValueLineGenerator implements LineGeneratorStrategy {
     @Value("${limit.bound.lower}")
     private int randomNumberLowerBound;
 
-    private Random random = new Random();
+    private SecureRandom random = new SecureRandom();
 
     private int generateNumber() {
         return random.ints(randomNumberLowerBound, randomNumberUpperBound)

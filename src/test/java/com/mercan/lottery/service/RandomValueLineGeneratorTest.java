@@ -13,7 +13,7 @@ class RandomValueLineGeneratorTest {
 
 
     @Test
-    public void test_generated_nubmers() {
+    void test_generated_nubmers() {
         //given
         int upperBound = 3;
         int lowerBound = 0;

@@ -38,7 +38,7 @@ class TicketControllerTest {
 
 
     @Test
-    public void create_ticket_expect_success() throws Exception {
+    void create_ticket_expect_success() throws Exception {
 
         //given
         int requestedNumberOfLines = 2;
@@ -58,7 +58,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void create_ticket_expect_exception_when_no_lines_provided() throws Exception {
+    void create_ticket_expect_exception_when_no_lines_provided() throws Exception {
 
         //given
 
@@ -75,7 +75,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void create_ticket_expect_exception_when_invalid_lines_provided() throws Exception {
+    void create_ticket_expect_exception_when_invalid_lines_provided() throws Exception {
 
         //given
         int invalidNumberOfLines = -1;
@@ -93,7 +93,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void update_ticket_expect_success() throws Exception {
+    void update_ticket_expect_success() throws Exception {
 
         //given
         int requestedNumberOfLines = 2;
@@ -114,7 +114,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void update_ticket_expect_exception_when_no_lines_provided() throws Exception {
+    void update_ticket_expect_exception_when_no_lines_provided() throws Exception {
         //given
         long validTicketId = 3;
 
@@ -131,7 +131,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void update_ticket_expect_exception_when_invalid_lines_provided() throws Exception {
+    void update_ticket_expect_exception_when_invalid_lines_provided() throws Exception {
         //given
         long validTicketId = 1;
         long invalidNumberOfLines = -1;
@@ -149,7 +149,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void update_ticket_expect_exception_when_no_ticket_provided() throws Exception {
+    void update_ticket_expect_exception_when_no_ticket_provided() throws Exception {
         //given
         long validNumberOfLines = 3;
 
@@ -166,7 +166,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void update_ticket_expect_exception_when_ticket_is_not_found() throws Exception {
+    void update_ticket_expect_exception_when_ticket_is_not_found() throws Exception {
 
         //given
         long invalidTicketId = 3;
@@ -187,7 +187,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void update_ticket_expect_exception_when_ticket_checked_before() throws Exception {
+    void update_ticket_expect_exception_when_ticket_checked_before() throws Exception {
 
         //given
         long invalidTicketId = 3;
@@ -210,7 +210,7 @@ class TicketControllerTest {
 
 
     @Test
-    public void check_ticket_expect_success() throws Exception {
+    void check_ticket_expect_success() throws Exception {
 
         //given
         long requestedTicketId = 2;
@@ -230,7 +230,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void check_ticket_expect_exception_when_ticket_id_is_not_provided() throws Exception {
+    void check_ticket_expect_exception_when_ticket_id_is_not_provided() throws Exception {
         //when
         this.mockMvc
                 .perform(get(CHECK_TICKET_ENDPOINT)
@@ -245,7 +245,7 @@ class TicketControllerTest {
     }
 
     @Test
-    public void check_ticket_expect_exception_when_ticket_is_not_found() throws Exception {
+    void check_ticket_expect_exception_when_ticket_is_not_found() throws Exception {
 
         //given
         long invalidTicketId = 2;

@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.mercan.lottery.TestHelper.createTicket;
@@ -95,6 +95,46 @@ class TicketControllerTest {
         verify(ticketService, never()).generateTicket(invalidNumberOfLines);
     }
 
+    @Test
+    void get_ticket_expect_success() throws Exception {
+
+        //given
+        int requestedNumberOfLines = 2;
+        Ticket expectedTicket = createTicket(requestedNumberOfLines);
+        when(ticketService.getTicket(expectedTicket.getId())).thenReturn(expectedTicket);
+
+        //when
+        this.mockMvc
+                .perform(get(TICKET_ENDPOINT + "/" + expectedTicket.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ticketLines", hasSize(requestedNumberOfLines)))
+                .andExpect(jsonPath("$.checked", is(false)));
+
+        verify(ticketService).getTicket(expectedTicket.getId());
+    }
+
+    @Test
+    void get_ticket_expect_exception_when_ticket_is_not_found() throws Exception {
+
+        //given
+        long invalidTicketId = 3;
+        doThrow(new TicketNotFoundException("ticket is not found for id " + invalidTicketId)).when(ticketService).getTicket(invalidTicketId);
+
+        //when
+        this.mockMvc
+                .perform(get(TICKET_ENDPOINT + "/" + invalidTicketId)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.reasonCode", is(HttpStatus.NOT_FOUND.name())))
+                .andExpect(jsonPath("$.errors[0]", is("ticket is not found for id " + invalidTicketId)));
+
+
+        verify(ticketService).getTicket(invalidTicketId);
+    }
+
 
     @Test
     void get_ticket_list_expect_success() throws Exception {
@@ -102,7 +142,7 @@ class TicketControllerTest {
         //given
         int requestedNumberOfLines = 2;
         Ticket expectedTicket = createTicket(requestedNumberOfLines);
-        List<Ticket> expectedResponse = Arrays.asList(expectedTicket);
+        List<Ticket> expectedResponse = Collections.singletonList(expectedTicket);
         when(ticketService.getAllTickets()).thenReturn(expectedResponse);
 
         //when
@@ -116,7 +156,6 @@ class TicketControllerTest {
                 .andExpect(jsonPath("[0].ticketLines", hasSize(requestedNumberOfLines)));
         verify(ticketService).getAllTickets();
     }
-
 
 
     @Test

@@ -35,7 +35,7 @@ public class TicketController {
     @Operation(summary = "Check lottery ticket by given id ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Result of ticket and also sets status of ticket as checked", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = TicketResult.class))}),
-            @ApiResponse(responseCode = "400", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
+            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
             @ApiResponse(responseCode = "404", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
     @GetMapping(value = "/check")
     public ResponseEntity<TicketResult> checkTicket(@RequestParam(value = "ticketId")
@@ -52,7 +52,7 @@ public class TicketController {
     @Operation(summary = "Create lottery ticket with given number of lines")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket is created", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ticket.class))}),
-            @ApiResponse(responseCode = "404", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
+            @ApiResponse(responseCode = "400", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
     @PostMapping()
     public ResponseEntity<Ticket> createTicket(@RequestParam(value = "numberOfLines")
                                                @Parameter(description = "Number of lines to be added to the stored ticket", name = "numberOfLines")
@@ -76,14 +76,27 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.OK).body(ticketList);
     }
 
+    @Operation(summary = "Get lottery ticket for given id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All tickets are retrieved", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<Ticket> getTicket(@PathVariable(value = "ticketId")
+                                            @Parameter(description = "Ticket id to be updated ", name = "ticketId")
+                                                    Long ticketId) {
+        log.info("get ticket ticketId: {}", ticketId);
+        Ticket ticket = ticketService.getTicket(ticketId);
+        return ResponseEntity.status(HttpStatus.OK).body(ticket);
+    }
+
 
     @PutMapping()
     @Operation(summary = "Update lottery ticket with given number of lines")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket is updated", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ticket.class))}),
-            @ApiResponse(responseCode = "400", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
-            @ApiResponse(responseCode = "400", description = "Ticket is checked before", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
-            @ApiResponse(responseCode = "404", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
+            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
+            @ApiResponse(responseCode = "404", description = "Ticket is checked before", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
+            @ApiResponse(responseCode = "400", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
     public ResponseEntity<Ticket> updateTicket(@RequestParam(value = "numberOfLines")
                                                @Parameter(description = "Number of lines to be added to the stored ticket", name = "numberOfLines")
                                                @Min(message = "numberOfLines can not be lower than 1.", value = 0)

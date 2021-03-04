@@ -58,4 +58,11 @@ public class TicketService {
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
+
+    public Ticket getTicket(Long ticketId) {
+        return ticketRepository.findById(ticketId).orElseThrow(() -> {
+            log.info("ticket is not found for id:{}", ticketId);
+            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+        });
+    }
 }

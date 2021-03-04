@@ -19,10 +19,20 @@ Feature: Lottery Features
     When  I want retrieve all tickets
     Then  I should receive all tickets
 
-
   Scenario: Get all tickets when there is no ticket
+    Given I have no tickets
     When  I want retrieve all tickets
     Then  I should receive empty response
+
+  Scenario: Get ticket by id
+    Given I have a ticket with 2 lines
+    When  I want retrieve this ticket
+    Then  I should receive this ticket successfully
+
+  Scenario: Get ticket by invalid id
+    Given I have a ticket with 2 lines
+    When  I want retrieve this ticket with invalid id -1
+    Then  I should receive an error contains "ticket is not found for id -1"
 
   Scenario: Update ticket for an existing ticket
     Given I have a ticket with 2 lines

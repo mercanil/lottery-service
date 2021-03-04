@@ -98,4 +98,14 @@ public class HttpClient {
             RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));
         }
     }
+
+    public void getTicket(long ticketId) throws JsonProcessingException {
+        try {
+            ResponseEntity<Ticket> ticketResponseEntity = restTemplate.getForEntity(lotteryGetTicketEndpoint()+"/" + ticketId, Ticket.class);
+            RequestContext.storeTicketResponse(ticketResponseEntity);
+        } catch (final HttpClientErrorException e) {
+            ApiError apiError = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);
+            RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));
+        }
+    }
 }

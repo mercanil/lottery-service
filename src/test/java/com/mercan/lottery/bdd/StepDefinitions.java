@@ -47,12 +47,40 @@ public class StepDefinitions {
             iHaveATicketWithLines(numberOfLines);
         }
     }
+    @Given("I have no tickets")
+    public void iHaveNoTickets() throws JsonProcessingException {
+        //DO NOTHING
+    }
+
+
+
 
     @When("I want retrieve all tickets")
     public void iWantRetrieveAllTickets() throws JsonProcessingException {
         httpClient.getAllTickets();
     }
 
+    @When("I want retrieve this ticket")
+    public void iWantToRetrieveThisTicket() throws JsonProcessingException {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        httpClient.getTicket(ticketResponse.getBody().getId());
+    }
+
+    @When("I want retrieve this ticket with invalid id {long}")
+    public void iWantRetrieveThisTicketWithInvalidId(final long invalidTicketId) throws JsonProcessingException {
+        httpClient.getTicket(invalidTicketId);
+    }
+
+    @Then("I should receive this ticket successfully")
+    public void iShouldReceiveThisTicketSuccessfully() {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        Ticket storedTicket = repository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
+
+        assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
+        assertThat(storedTicket.isChecked(), is(ticketResponse.getBody().isChecked()));
+        assertThat(storedTicket.getTicketLines().size(), is(ticketResponse.getBody().getTicketLines().size()));
+        assertThat(storedTicket.getId(), is(ticketResponse.getBody().getId()));
+    }
 
     @Then("I should receive all tickets")
     public void iShouldReceiveAllTickets() {

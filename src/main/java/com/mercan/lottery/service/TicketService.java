@@ -1,13 +1,11 @@
 package com.mercan.lottery.service;
 
-import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.entity.TicketFactory;
 import com.mercan.lottery.exception.TicketCheckedException;
 import com.mercan.lottery.exception.TicketNotFoundException;
 import com.mercan.lottery.repository.TicketRepository;
 import com.mercan.lottery.service.strategy.LineGeneratorStrategy;
-import com.mercan.lottery.service.strategy.LineResultCalculatorStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -13,12 +13,10 @@ class RandomValueLineGeneratorTest {
 
 
     @Test
-    void test_generated_nubmers() {
+    void test_generated_numbers() {
         //given
         int upperBound = 3;
         int lowerBound = 0;
-        ReflectionTestUtils.setField(randomValueLineGenerator, "randomNumberUpperBound", upperBound);
-        ReflectionTestUtils.setField(randomValueLineGenerator, "randomNumberLowerBound", lowerBound);
 
         for (int i = 0; i < 100000; i++) {
             TicketLine line = randomValueLineGenerator.generateLine();

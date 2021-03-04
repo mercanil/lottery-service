@@ -1,7 +1,6 @@
 package com.mercan.lottery.controller;
 
 import com.mercan.lottery.dto.ApiError;
-import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -93,7 +92,4 @@ public class TicketController {
 
         return ResponseEntity.ok(ticket);
     }
-
-
-
 }

@@ -16,19 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class TicketService {
-    private final TicketRepository ticketRepository;
-    private final TicketFactory ticketFactory;
-    private final LineGeneratorStrategy lineGeneratorStrategy;
-
     private static final String TICKET_NOT_FOUND = "ticket is not found for id:{%d}";
     private static final String TICKET_ALREADY_CHECKED_FOUND = "ticket with id:{%d} has been checked before.";
 
-    public Ticket getTicket(Long ticketId) {
-        return ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info(String.format(TICKET_NOT_FOUND, ticketId));
-            return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
-        });
-    }
+    private final TicketFactory ticketFactory;
+    private final LineGeneratorStrategy lineGeneratorStrategy;
+    private final TicketRepository ticketRepository;
+
 
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
@@ -41,10 +35,7 @@ public class TicketService {
     }
 
     public Ticket updateTicket(Long ticketId, Integer numberLines) {
-        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info(String.format(TICKET_NOT_FOUND, ticketId));
-            return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
-        });
+        Ticket ticket = getTicket(ticketId);
         if (ticket.isChecked()) {
             log.info(String.format(TICKET_ALREADY_CHECKED_FOUND, ticketId));
             throw new TicketCheckedException(String.format(TICKET_ALREADY_CHECKED_FOUND, ticketId));
@@ -56,11 +47,19 @@ public class TicketService {
     }
 
     public void delete(Long ticketId) {
-        ticketRepository.findById(ticketId).orElseThrow(() -> {
+        boolean ticketExist = ticketRepository.existsById(ticketId);
+        if (!ticketExist) {
+            log.info(String.format(TICKET_NOT_FOUND, ticketId));
+            throw new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
+        }
+        ticketRepository.deleteById(ticketId);
+    }
+
+
+    public Ticket getTicket(Long ticketId) {
+        return ticketRepository.findById(ticketId).orElseThrow(() -> {
             log.info(String.format(TICKET_NOT_FOUND, ticketId));
             return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
         });
-
-        ticketRepository.deleteById(ticketId);
     }
 }

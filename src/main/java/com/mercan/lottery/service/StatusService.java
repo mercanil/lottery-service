@@ -31,14 +31,23 @@ public class StatusService {
             log.info(String.format(TICKET_NOT_FOUND, ticketId));
             return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
         });
+
+        changeStatus(ticket);
+
+        List<TicketLineResult> ticketLineResult = createTicketLineResult(ticket);
+        return new TicketResult(ticket, ticketLineResult);
+    }
+
+    private void changeStatus(Ticket ticket) {
         ticket.setChecked(true);
         ticketRepository.save(ticket);
+    }
 
-        List<TicketLineResult> ticketLineResult = ticket.getTicketLines()
+    private List<TicketLineResult> createTicketLineResult(Ticket ticket) {
+        return ticket.getTicketLines()
                 .stream()
                 .map(ticketLine -> TicketLineMapper.toLineResult(ticketLine, lineResultCalculatorStrategy))
                 .sorted(Comparator.comparing(TicketLineResult::getResult))
                 .collect(Collectors.toList());
-        return new TicketResult(ticket, ticketLineResult);
     }
 }

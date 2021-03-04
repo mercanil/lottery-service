@@ -178,10 +178,8 @@ class TicketServiceTest {
 
         //given
         long validTicketId = 1;
-        int numberOfLines = 1;
         doNothing().when(mockTicketRepository).deleteById(validTicketId);
-        Ticket storedTicket = createTicket(numberOfLines);
-        given(mockTicketRepository.findById(storedTicket.getId())).willReturn(Optional.of(storedTicket));
+        given(mockTicketRepository.existsById(validTicketId)).willReturn(true);
 
         //when
         classUnderTest.delete(validTicketId);
@@ -196,7 +194,7 @@ class TicketServiceTest {
 
         //given
         long invalidTicketId = 1;
-        given(mockTicketRepository.findById(invalidTicketId)).willReturn(Optional.empty());
+        given(mockTicketRepository.existsById(invalidTicketId)).willReturn(false);
 
 
         //when then

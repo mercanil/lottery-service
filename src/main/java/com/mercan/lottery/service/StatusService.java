@@ -21,14 +21,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class StatusService {
 
+    private static final String TICKET_NOT_FOUND = "ticket is not found for id:{%d}";
     private final LineResultCalculatorStrategy lineResultCalculatorStrategy;
     private final TicketRepository ticketRepository;
 
 
     public TicketResult checkStatus(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info("ticket is not found for id:{}", ticketId);
-            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+            log.info(String.format(TICKET_NOT_FOUND, ticketId));
+            return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
         });
         ticket.setChecked(true);
         ticketRepository.save(ticket);

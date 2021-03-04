@@ -31,7 +31,7 @@ Feature: Lottery Features
   Scenario: Get ticket by invalid id
     Given I have a ticket with 2 lines
     When  I want retrieve this ticket with invalid id -1
-    Then  I should receive an error contains "ticket is not found for id -1"
+    Then  I should receive an error contains "ticket is not found for id:{-1}"
 
 
 
@@ -55,7 +55,7 @@ Feature: Lottery Features
   Scenario: Update ticket with invalid ticketId
     Given I have a ticket with 2 lines
     When  I want to add new 3 lines to this ticket but provide invalid -1 ticketId
-    Then  I should receive an error contains "ticket is not found for id -1"
+    Then  I should receive an error contains "ticket is not found for id:{-1}"
 
 
   Scenario: Update ticket which is checked before
@@ -67,7 +67,7 @@ Feature: Lottery Features
   Scenario: Delete ticket
     Given I have a ticket with 2 lines
     When  I want to delete ticket by invalid -1 id
-    Then  I should receive an error contains "ticket is not found for id -1"
+    Then  I should receive an error contains "ticket is not found for id:{-1}"
 
   Scenario: Check ticket
     Given I have a ticket with 2 lines
@@ -78,4 +78,4 @@ Feature: Lottery Features
   Scenario: Check non existing ticket
     Given I have a ticket with 2 lines
     When  I want to check ticket but provide invalid ticketId -1
-    Then  I should receive an error contains "ticket is not found for id -1"
+    Then  I should receive an error contains "ticket is not found for id:{-1}"

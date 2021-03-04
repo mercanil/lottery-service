@@ -20,11 +20,13 @@ public class TicketService {
     private final TicketFactory ticketFactory;
     private final LineGeneratorStrategy lineGeneratorStrategy;
 
+    private static final String TICKET_NOT_FOUND = "ticket is not found for id:{%d}";
+    private static final String TICKET_ALREADY_CHECKED_FOUND = "ticket with id:{%d} has been checked before.";
 
     public Ticket getTicket(Long ticketId) {
         return ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info("ticket is not found for id:{}", ticketId);
-            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+            log.info(String.format(TICKET_NOT_FOUND, ticketId));
+            return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
         });
     }
 
@@ -40,12 +42,12 @@ public class TicketService {
 
     public Ticket updateTicket(Long ticketId, Integer numberLines) {
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info("ticket is not found for id:{}", ticketId);
-            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+            log.info(String.format(TICKET_NOT_FOUND, ticketId));
+            return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
         });
         if (ticket.isChecked()) {
-            log.info("ticket id : {} already checked. Unable to update", ticketId);
-            throw new TicketCheckedException("ticket with id:" + ticketId + " has been checked before.");
+            log.info(String.format(TICKET_ALREADY_CHECKED_FOUND, ticketId));
+            throw new TicketCheckedException(String.format(TICKET_ALREADY_CHECKED_FOUND, ticketId));
         }
         for (int i = 0; i < numberLines; i++) {
             ticket.addLine(lineGeneratorStrategy.generateLine());
@@ -54,9 +56,9 @@ public class TicketService {
     }
 
     public void delete(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info("ticket is not found for id:{}", ticketId);
-            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+        ticketRepository.findById(ticketId).orElseThrow(() -> {
+            log.info(String.format(TICKET_NOT_FOUND, ticketId));
+            return new TicketNotFoundException(String.format(TICKET_NOT_FOUND, ticketId));
         });
 
         ticketRepository.deleteById(ticketId);

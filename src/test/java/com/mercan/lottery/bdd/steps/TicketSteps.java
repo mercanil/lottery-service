@@ -1,8 +1,8 @@
-package com.mercan.lottery.bdd;
+package com.mercan.lottery.bdd.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mercan.lottery.bdd.commons.HttpClient;
 import com.mercan.lottery.bdd.commons.RequestContext;
+import com.mercan.lottery.bdd.commons.TicketHttpClient;
 import com.mercan.lottery.dto.ApiError;
 import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
@@ -22,13 +22,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StepDefinitions {
+public class TicketSteps {
 
     @Autowired
-    private HttpClient httpClient;
-
+    protected TicketRepository repository;
     @Autowired
-    TicketRepository repository;
+    protected TicketHttpClient ticketHttpClient;
 
 
     @After
@@ -36,39 +35,20 @@ public class StepDefinitions {
         repository.deleteAll();
     }
 
-    @Given("I have a ticket with {int} lines")
-    public void iHaveATicketWithLines(final int numberOfLines) throws JsonProcessingException {
-        httpClient.post(numberOfLines);
-    }
-
-    @Given("I have {int} tickets with {int} lines each")
-    public void iHaveATicketWithLines(final int ticketCount, final int numberOfLines) throws JsonProcessingException {
-        for (int i = 0; i < ticketCount; i++) {
-            iHaveATicketWithLines(numberOfLines);
-        }
-    }
-    @Given("I have no tickets")
-    public void iHaveNoTickets() throws JsonProcessingException {
-        //DO NOTHING
-    }
-
-
-
-
     @When("I want retrieve all tickets")
     public void iWantRetrieveAllTickets() throws JsonProcessingException {
-        httpClient.getAllTickets();
+        ticketHttpClient.getAllTickets();
     }
 
     @When("I want retrieve this ticket")
     public void iWantToRetrieveThisTicket() throws JsonProcessingException {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.getTicket(ticketResponse.getBody().getId());
+        ticketHttpClient.getTicket(ticketResponse.getBody().getId());
     }
 
     @When("I want retrieve this ticket with invalid id {long}")
     public void iWantRetrieveThisTicketWithInvalidId(final long invalidTicketId) throws JsonProcessingException {
-        httpClient.getTicket(invalidTicketId);
+        ticketHttpClient.getTicket(invalidTicketId);
     }
 
     @Then("I should receive this ticket successfully")
@@ -91,26 +71,14 @@ public class StepDefinitions {
         assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
     }
 
-    @Then("I should receive empty response")
-    public void iShouldReceiveEmptyResponse() {
-        ResponseEntity<List<Ticket>> ticketResponse = RequestContext.getTicketListResult();
-        List<Ticket> storedTicketList = repository.findAll();
-
-        assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
-        assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
-        assertThat(ticketResponse.getBody(), empty());
-        assertThat(storedTicketList, empty());
-    }
-
-
     @When("I want to create a ticket with {int} lines")
     public void iWantToCreateATicketWithLines(final int numberOfLines) throws JsonProcessingException {
-        httpClient.post(numberOfLines);
+        ticketHttpClient.post(numberOfLines);
     }
 
     @When("I want to create this ticket but forget to add numberOfLines")
     public void iWantToCreateThisTicketButForgetToAddNumberOfLines() throws JsonProcessingException {
-        httpClient.post(null);
+        ticketHttpClient.post(null);
     }
 
 
@@ -126,6 +94,75 @@ public class StepDefinitions {
         assertThat(storedTicket.getId(), is(notNullValue()));
     }
 
+
+    @When("I want to add new {int} lines to this ticket")
+    public void iWantToAddnewLinesToThisTicket(int additionalLines) throws JsonProcessingException {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        ticketHttpClient.put(additionalLines, ticketResponse.getBody().getId());
+    }
+
+
+    @When("I want to add new lines to this ticket but forget to add numberOfLines")
+    public void iWantToAddNewLinesToThisTicketButForgetToAddNumberOfLines() throws JsonProcessingException {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        ticketHttpClient.put(null, ticketResponse.getBody().getId());
+    }
+
+    @When("I want to add new lines to this ticket but provide invalid {int} value to numberOfLines")
+    public void iWantToAddNewLinesToThisTicketButProvideInvalidValue(int additionalLines) throws JsonProcessingException {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        ticketHttpClient.put(additionalLines, ticketResponse.getBody().getId());
+    }
+
+    @When("I want to add new {int} lines to this ticket but forget to add ticketId")
+    public void iWantToAddNewLinesToThisTicketButForgetToAddTicketId(int additionalLines) throws JsonProcessingException {
+        ticketHttpClient.put(additionalLines, null);
+    }
+
+    @When("I want to add new {int} lines to this ticket but provide invalid {long} ticketId")
+    public void iWantToAddNewLinesToThisTicketButProvideInvalidTicketId(int additionalLines, long ticketId) throws JsonProcessingException {
+        ticketHttpClient.put(additionalLines, ticketId);
+    }
+
+    @Then("I should receive updated ticket with {int} lines")
+    public void iShouldReceiveUpdatedTicketWithLines(int totalLines) {
+        Ticket storedTicket = repository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
+        assertThat(storedTicket.isChecked(), is(false));
+        assertThat(storedTicket.getTicketLines(), hasSize(totalLines));
+        assertThat(storedTicket.getId(), is(notNullValue()));
+    }
+
+
+    @Given("I have a ticket with {int} lines")
+    public void iHaveATicketWithLines(final int numberOfLines) throws JsonProcessingException {
+        ticketHttpClient.post(numberOfLines);
+    }
+
+    @Given("I have {int} tickets with {int} lines")
+    public void iHaveMultipleTicketsWithLines(final int ticketCount, final int numberOfLines) throws JsonProcessingException {
+        for (int i = 0; i < ticketCount; i++) {
+            ticketHttpClient.post(numberOfLines);
+        }
+    }
+
+
+    @Given("I have no tickets")
+    public void iHaveNoTickets() {
+        //DO NOTHING
+    }
+
+
+    @Then("I should receive empty response")
+    public void iShouldReceiveEmptyResponse() {
+        ResponseEntity<List<Ticket>> ticketResponse = RequestContext.getTicketListResult();
+        List<Ticket> storedTicketList = repository.findAll();
+
+        assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
+        assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
+        assertThat(ticketResponse.getBody(), empty());
+        assertThat(storedTicketList, empty());
+    }
+
     @Then("I should receive an error contains {string}")
     public void iShouldReceiveAnErrorContains(String error) {
         ResponseEntity<ApiError> ticketResponse = RequestContext.getTicketError();
@@ -134,76 +171,5 @@ public class StepDefinitions {
         assertTrue(ticketResponse.getStatusCode().isError());
     }
 
-    @When("I want to add new {int} lines to this ticket")
-    public void iWantToAddnewLinesToThisTicket(int additionalLines) throws JsonProcessingException {
-        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.put(additionalLines, ticketResponse.getBody().getId());
-    }
-
-    @Then("I should receive updated ticket with {int} lines")
-    public void iShouldReceiveUpdateTicketWithLines(int totalLines) {
-        Ticket storedTicket = repository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
-        assertThat(storedTicket.isChecked(), is(false));
-        assertThat(storedTicket.getTicketLines(), hasSize(totalLines));
-        assertThat(storedTicket.getId(), is(notNullValue()));
-    }
-
-
-    @When("I want to add new lines to this ticket but forget to add numberOfLines")
-    public void iWantToAddNewLinesToThisTicketButForgetToAddNumberOfLines() throws JsonProcessingException {
-        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.put(null, ticketResponse.getBody().getId());
-    }
-
-    @When("I want to add new lines to this ticket but provide invalid {int} value to numberOfLines")
-    public void iWantToAddNewLinesToThisTicketButProvideInvalidValue(int additionalLines) throws JsonProcessingException {
-        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.put(additionalLines, ticketResponse.getBody().getId());
-    }
-
-    @When("I want to add new {int} lines to this ticket but forget to add ticketId")
-    public void iWantToAddNewLinesToThisTicketButForgetToAddTicketId(int additionalLines) throws JsonProcessingException {
-        httpClient.put(additionalLines, null);
-    }
-
-    @When("I want to add new {int} lines to this ticket but provide invalid {long} ticketId")
-    public void iWantToAddNewLinesToThisTicketButProvideInvalidTicketId(int additionalLines, long ticketId) throws JsonProcessingException {
-        httpClient.put(additionalLines, ticketId);
-    }
-
-    @But("This ticket is checked before")
-    public void thisTicketIsCheckedBefore() throws JsonProcessingException {
-        iWantToCheckTicket();
-    }
-
-    @When("I want to check ticket")
-    public void iWantToCheckTicket() throws JsonProcessingException {
-        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.get(ticketResponse.getBody().getId());
-    }
-
-    @Then("I should receive ticket with {int} lines contains results")
-    public void iShouldReceiveTicketWithLinesContainsResult(int totalLines) {
-        ResponseEntity<TicketResult> ticketResultResponse = RequestContext.getTicketResultResponse();
-        TicketResult ticketResult = ticketResultResponse.getBody();
-        assertThat(ticketResultResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
-        assertThat(ticketResult.getTicket().isChecked(), is(true));
-
-        assertThat(ticketResult.getResults(), hasSize(totalLines));
-        assertThat(ticketResult.getTicket().getId(), is(notNullValue()));
-
-    }
-
-    @When("I want to check ticket but forget to provide ticketId")
-    public void iWantToCheckTicketButForgetToProvideTicketId() throws JsonProcessingException {
-        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.get(null);
-    }
-
-    @When("I want to check ticket but provide invalid ticketId {long}")
-    public void iWantToCheckTicketButForgetToProvideTicketId(final long ticketId) throws JsonProcessingException {
-        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        httpClient.get(ticketId);
-    }
 
 }

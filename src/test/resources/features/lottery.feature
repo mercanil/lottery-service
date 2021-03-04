@@ -4,7 +4,6 @@ Feature: Lottery Features
     When  I want to create a ticket with 2 lines
     Then  Ticket should be stored with 2 lines
 
-
   Scenario: Create Ticket without numberOfLines
     When  I want to create this ticket but forget to add numberOfLines
     Then  I should receive an error contains "Required Integer parameter 'numberOfLines' is not present"
@@ -15,7 +14,7 @@ Feature: Lottery Features
 
 
   Scenario: Get all tickets
-    Given I have 2 tickets with 2 lines each
+    Given I have 2 tickets with 2 lines
     When  I want retrieve all tickets
     Then  I should receive all tickets
 
@@ -34,6 +33,8 @@ Feature: Lottery Features
     When  I want retrieve this ticket with invalid id -1
     Then  I should receive an error contains "ticket is not found for id -1"
 
+
+
   Scenario: Update ticket for an existing ticket
     Given I have a ticket with 2 lines
     When  I want to add new 3 lines to this ticket
@@ -50,11 +51,6 @@ Feature: Lottery Features
     Given I have a ticket with 2 lines
     When  I want to add new lines to this ticket but provide invalid -1 value to numberOfLines
     Then  I should receive an error contains "numberOfLines can not be lower than 1. Input value:{-1}"
-
-  Scenario: Update ticket without ticketId
-    Given I have a ticket with 2 lines
-    When  I want to add new 3 lines to this ticket but forget to add ticketId
-    Then  I should receive an error contains "Required Long parameter 'ticketId' is not present"
 
   Scenario: Update ticket with invalid ticketId
     Given I have a ticket with 2 lines
@@ -74,11 +70,6 @@ Feature: Lottery Features
     When  I want to check ticket
     Then  I should receive ticket with 2 lines contains results
 
-
-  Scenario: Check ticket without ticketId
-    Given I have a ticket with 2 lines
-    When  I want to check ticket but forget to provide ticketId
-    Then  I should receive an error contains "Required Long parameter 'ticketId' is not present"
 
   Scenario: Check non existing ticket
     Given I have a ticket with 2 lines

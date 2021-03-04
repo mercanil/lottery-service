@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -39,9 +38,6 @@ class TicketServiceTest {
     @Mock
     LineGeneratorStrategy mockLineGenerator;
 
-
-    @Mock
-    LineResultCalculatorStrategy lineResultCalculatorStrategy;
 
     @InjectMocks
     TicketService classUnderTest;
@@ -175,44 +171,4 @@ class TicketServiceTest {
         verify(mockLineGenerator, never()).generateLine();
 
     }
-
-
-    @Test
-    void check_ticket_expect_success() {
-
-        //given
-        int numberOfLines = 1;
-        Ticket storedTicket = createTicket(numberOfLines);
-        given(mockTicketRepository.findById(storedTicket.getId())).willReturn(Optional.of(storedTicket));
-        given(mockTicketRepository.save(storedTicket)).willReturn(storedTicket);
-        given(lineResultCalculatorStrategy.calculateResult(storedTicket.getTicketLines().get(0))).willReturn(12);
-
-        //when
-        TicketResult ticketResult = classUnderTest.checkTicket(storedTicket.getId());
-
-        //then
-        assertThat(ticketResult.getTicket().isChecked(), is(true));
-        assertThat(ticketResult.getTicket().getTicketLines(), hasSize(numberOfLines));
-        verify(mockTicketRepository).findById(storedTicket.getId());
-
-    }
-
-
-    @Test
-    void check_ticket_expect_exception_when_ticket_is_not_found() {
-
-        //given
-        long invalidId = 1;
-        given(mockTicketRepository.findById(invalidId)).willReturn(Optional.empty());
-
-
-        //then
-        Assertions.assertThrows(TicketNotFoundException.class, () -> classUnderTest.checkTicket(invalidId));
-        verify(mockTicketRepository).findById(invalidId);
-        verify(mockTicketRepository, never()).save(any());
-        verify(mockLineGenerator, never()).generateLine();
-
-    }
-
-
 }

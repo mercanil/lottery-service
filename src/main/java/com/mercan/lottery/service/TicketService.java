@@ -21,8 +21,18 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketFactory ticketFactory;
     private final LineGeneratorStrategy lineGeneratorStrategy;
-    private final LineResultCalculatorStrategy lineResultCalculatorStrategy;
 
+
+    public Ticket getTicket(Long ticketId) {
+        return ticketRepository.findById(ticketId).orElseThrow(() -> {
+            log.info("ticket is not found for id:{}", ticketId);
+            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+        });
+    }
+
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
+    }
 
     public Ticket generateTicket(Integer numberLines) {
         Ticket lotteryTicket = ticketFactory.generateTicket(numberLines);
@@ -43,26 +53,5 @@ public class TicketService {
             ticket.addLine(lineGeneratorStrategy.generateLine());
         }
         return ticketRepository.save(ticket);
-    }
-
-    public TicketResult checkTicket(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info("ticket is not found for id:{}", ticketId);
-            return new TicketNotFoundException("ticket is not found for id " + ticketId);
-        });
-        ticket.setChecked(true);
-        ticketRepository.save(ticket);
-        return new TicketResult(ticket, lineResultCalculatorStrategy);
-    }
-
-    public List<Ticket> getAllTickets() {
-        return ticketRepository.findAll();
-    }
-
-    public Ticket getTicket(Long ticketId) {
-        return ticketRepository.findById(ticketId).orElseThrow(() -> {
-            log.info("ticket is not found for id:{}", ticketId);
-            return new TicketNotFoundException("ticket is not found for id " + ticketId);
-        });
     }
 }

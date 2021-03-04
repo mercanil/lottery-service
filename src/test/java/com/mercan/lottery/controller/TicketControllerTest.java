@@ -1,6 +1,5 @@
 package com.mercan.lottery.controller;
 
-import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.exception.TicketCheckedException;
 import com.mercan.lottery.exception.TicketNotFoundException;
@@ -18,9 +17,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.mercan.lottery.TestHelper.createTicket;
-import static com.mercan.lottery.TestHelper.createTicketResult;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class TicketControllerTest {
     private static final String TICKET_ENDPOINT = "/ticket";
-    private static final String CHECK_TICKET_ENDPOINT = TICKET_ENDPOINT + "/check";
 
     @MockBean
     TicketService ticketService;
@@ -169,7 +166,7 @@ class TicketControllerTest {
 
         //when
         this.mockMvc
-                .perform(put(TICKET_ENDPOINT + "?numberOfLines=" + requestedNumberOfLines + "&ticketId=" + validTicketId)
+                .perform(put(TICKET_ENDPOINT + "/" + validTicketId + "?numberOfLines=" + requestedNumberOfLines)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -186,7 +183,7 @@ class TicketControllerTest {
 
         //when
         this.mockMvc
-                .perform(put(TICKET_ENDPOINT + "?ticketId=" + validTicketId)
+                .perform(put(TICKET_ENDPOINT + "/" + validTicketId)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isBadRequest())
@@ -204,29 +201,12 @@ class TicketControllerTest {
 
         //when
         this.mockMvc
-                .perform(put(TICKET_ENDPOINT + "?numberOfLines=" + invalidNumberOfLines + "&ticketId=" + validTicketId)
+                .perform(put(TICKET_ENDPOINT + "/" + validTicketId + "?numberOfLines=" + invalidNumberOfLines)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.reasonCode", is(HttpStatus.BAD_REQUEST.name())))
                 .andExpect(jsonPath("$.errors[0]", is("numberOfLines can not be lower than 1. Input value:{" + invalidNumberOfLines + "}")));
-
-        verify(ticketService, never()).updateTicket(any(), anyInt());
-    }
-
-    @Test
-    void update_ticket_expect_exception_when_no_ticket_provided() throws Exception {
-        //given
-        long validNumberOfLines = 3;
-
-        //when
-        this.mockMvc
-                .perform(put(TICKET_ENDPOINT + "?numberOfLines=" + validNumberOfLines)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.reasonCode", is(HttpStatus.BAD_REQUEST.name())))
-                .andExpect(jsonPath("$.errors[0]", is("Required Long parameter 'ticketId' is not present")));
 
         verify(ticketService, never()).updateTicket(any(), anyInt());
     }
@@ -241,7 +221,7 @@ class TicketControllerTest {
 
         //when
         this.mockMvc
-                .perform(put(TICKET_ENDPOINT + "?numberOfLines=" + validNumberOfLines + "&ticketId=" + invalidTicketId)
+                .perform(put(TICKET_ENDPOINT + "/" + invalidTicketId + "?numberOfLines=" + validNumberOfLines)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNotFound())
@@ -256,79 +236,21 @@ class TicketControllerTest {
     void update_ticket_expect_exception_when_ticket_checked_before() throws Exception {
 
         //given
-        long invalidTicketId = 3;
+        long validTicketId = 3;
         int validNumberOfLines = 3;
 
-        doThrow(new TicketCheckedException("ticket with id:" + invalidTicketId + " has been checked before.")).when(ticketService).updateTicket(invalidTicketId, validNumberOfLines);
+        doThrow(new TicketCheckedException("ticket with id:" + validTicketId + " has been checked before.")).when(ticketService).updateTicket(validTicketId, validNumberOfLines);
 
         //when
         this.mockMvc
-                .perform(put(TICKET_ENDPOINT + "?numberOfLines=" + validNumberOfLines + "&ticketId=" + invalidTicketId)
+                .perform(put(TICKET_ENDPOINT + "/" + validTicketId + "?numberOfLines=" + validNumberOfLines)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.reasonCode", is(HttpStatus.NOT_FOUND.name())))
-                .andExpect(jsonPath("$.errors[0]", is("ticket with id:" + invalidTicketId + " has been checked before.")));
+                .andExpect(jsonPath("$.errors[0]", is("ticket with id:" + validTicketId + " has been checked before.")));
 
 
-        verify(ticketService).updateTicket(invalidTicketId, validNumberOfLines);
+        verify(ticketService).updateTicket(validTicketId, validNumberOfLines);
     }
-
-
-    @Test
-    void check_ticket_expect_success() throws Exception {
-
-        //given
-        long requestedTicketId = 2;
-        TicketResult expectedTicketResult = createTicketResult();
-        when(ticketService.checkTicket(requestedTicketId)).thenReturn(expectedTicketResult);
-
-        //when
-        this.mockMvc
-                .perform(get(CHECK_TICKET_ENDPOINT + "?ticketId=" + requestedTicketId)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ticket.checked", is(false)))
-                .andExpect(jsonPath("$.results", not(empty())));
-
-        verify(ticketService).checkTicket(requestedTicketId);
-    }
-
-    @Test
-    void check_ticket_expect_exception_when_ticket_id_is_not_provided() throws Exception {
-        //when
-        this.mockMvc
-                .perform(get(CHECK_TICKET_ENDPOINT)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.reasonCode", is(HttpStatus.BAD_REQUEST.name())))
-                .andExpect(jsonPath("$.errors[0]", is("Required Long parameter 'ticketId' is not present")));
-
-
-        verify(ticketService, never()).checkTicket(anyLong());
-    }
-
-    @Test
-    void check_ticket_expect_exception_when_ticket_is_not_found() throws Exception {
-
-        //given
-        long invalidTicketId = 2;
-        doThrow(new TicketNotFoundException("ticket is not found for id " + invalidTicketId)).when(ticketService).checkTicket(invalidTicketId);
-
-        //when
-        this.mockMvc
-                .perform(get(CHECK_TICKET_ENDPOINT + "?ticketId=" + invalidTicketId)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.reasonCode", is(HttpStatus.NOT_FOUND.name())))
-                .andExpect(jsonPath("$.errors[0]", is("ticket is not found for id " + invalidTicketId)));
-
-
-        verify(ticketService).checkTicket(invalidTicketId);
-    }
-
-
 }

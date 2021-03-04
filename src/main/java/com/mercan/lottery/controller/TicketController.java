@@ -31,23 +31,30 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-
-    @Operation(summary = "Check lottery ticket by given id ")
+    @Operation(summary = "Get lottery ticket for given id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Result of ticket and also sets status of ticket as checked", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = TicketResult.class))}),
-            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
-            @ApiResponse(responseCode = "404", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
-    @GetMapping(value = "/check")
-    public ResponseEntity<TicketResult> checkTicket(@RequestParam(value = "ticketId")
-                                                    @Parameter(description = "Ticket id to be checked", name = "ticketId")
-                                                            Long ticketId) {
-        log.info("check lottery result for id :{}", ticketId);
-        TicketResult ticketResult = ticketService.checkTicket(ticketId);
-        log.info("check lottery result for id :{} , response:{}", ticketId, ticketResult);
-
-        return ResponseEntity.ok(ticketResult);
+            @ApiResponse(responseCode = "200", description = "All tickets are retrieved", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<Ticket> getTicket(@PathVariable(value = "ticketId")
+                                            @Parameter(description = "Ticket id to be updated ", name = "ticketId")
+                                                    Long ticketId) {
+        log.info("get ticket ticketId: {}", ticketId);
+        Ticket ticket = ticketService.getTicket(ticketId);
+        return ResponseEntity.status(HttpStatus.OK).body(ticket);
     }
 
+
+    @Operation(summary = "Get all lottery tickets")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All tickets are retrieved", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})})
+
+    @GetMapping()
+    public ResponseEntity<List<Ticket>> getAllTickets() {
+        log.info("get lottery tickets");
+        List<Ticket> ticketList = ticketService.getAllTickets();
+        return ResponseEntity.status(HttpStatus.OK).body(ticketList);
+    }
 
     @Operation(summary = "Create lottery ticket with given number of lines")
     @ApiResponses(value = {
@@ -65,32 +72,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
     }
 
-    @Operation(summary = "Get all lottery tickets")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All tickets are retrieved", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})})
-
-    @GetMapping()
-    public ResponseEntity<List<Ticket>> getAllTickets() {
-        log.info("get lottery tickets");
-        List<Ticket> ticketList = ticketService.getAllTickets();
-        return ResponseEntity.status(HttpStatus.OK).body(ticketList);
-    }
-
-    @Operation(summary = "Get lottery ticket for given id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All tickets are retrieved", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}),
-            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
-    @GetMapping("/{ticketId}")
-    public ResponseEntity<Ticket> getTicket(@PathVariable(value = "ticketId")
-                                            @Parameter(description = "Ticket id to be updated ", name = "ticketId")
-                                                    Long ticketId) {
-        log.info("get ticket ticketId: {}", ticketId);
-        Ticket ticket = ticketService.getTicket(ticketId);
-        return ResponseEntity.status(HttpStatus.OK).body(ticket);
-    }
-
-
-    @PutMapping()
+    @PutMapping("/{ticketId}")
     @Operation(summary = "Update lottery ticket with given number of lines")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ticket is updated", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ticket.class))}),
@@ -102,7 +84,7 @@ public class TicketController {
                                                @Min(message = "numberOfLines can not be lower than 1.", value = 0)
                                                        Integer numberOfLines,
 
-                                               @RequestParam(value = "ticketId")
+                                               @PathVariable(value = "ticketId")
                                                @Parameter(description = "Ticket id to be updated ", name = "ticketId")
                                                        Long ticketId) {
         log.info("update lottery ticketId: {} line numbers :{}", ticketId, numberOfLines);
@@ -111,4 +93,7 @@ public class TicketController {
 
         return ResponseEntity.ok(ticket);
     }
+
+
+
 }

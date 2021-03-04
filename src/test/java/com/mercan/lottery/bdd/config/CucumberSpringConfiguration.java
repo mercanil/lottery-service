@@ -1,4 +1,4 @@
-package com.mercan.lottery.bdd.commons;
+package com.mercan.lottery.bdd.config;
 
 import com.mercan.lottery.LotteryApplication;
 import io.cucumber.spring.CucumberContextConfiguration;

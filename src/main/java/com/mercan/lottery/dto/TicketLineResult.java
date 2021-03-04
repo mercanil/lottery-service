@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LineResult {
+public class TicketLineResult {
 
     private TicketLine line;
     private Integer result;
 
-    public LineResult(TicketLine line, int result) {
+    public TicketLineResult(TicketLine line, int result) {
         this.line = line;
         this.result = result;
     }

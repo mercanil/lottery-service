@@ -1,6 +1,6 @@
 package com.mercan.lottery;
 
-import com.mercan.lottery.dto.LineResult;
+import com.mercan.lottery.dto.TicketLineResult;
 import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.entity.TicketLine;
@@ -33,20 +33,20 @@ public class TestHelper {
 
     public static TicketResult createTicketResult() {
         Ticket createdTicket = createTicket(TEST_LINE_COUNT);
-        List<LineResult> createdLineResultList = createLineResultList(TEST_LINE_COUNT);
-        return TicketResult.builder().id(createdTicket.getId()).results(createdLineResultList).build();
+        List<TicketLineResult> createdTicketLineResultList = createLineResultList(TEST_LINE_COUNT);
+        return TicketResult.builder().id(createdTicket.getId()).results(createdTicketLineResultList).build();
     }
 
-    private static List<LineResult> createLineResultList(int numberOfLines) {
-        List<LineResult> lineResults = new ArrayList<>();
+    private static List<TicketLineResult> createLineResultList(int numberOfLines) {
+        List<TicketLineResult> ticketLineResults = new ArrayList<>();
         for (int i = 0; i < numberOfLines; i++) {
-            lineResults.add(createLineResult());
+            ticketLineResults.add(createLineResult());
         }
-        return lineResults;
+        return ticketLineResults;
     }
 
-    private static LineResult createLineResult() {
-        return LineResult.builder().line(createTicketLine()).result(TEST_RESULT_VALUE).build();
+    private static TicketLineResult createLineResult() {
+        return TicketLineResult.builder().line(createTicketLine()).result(TEST_RESULT_VALUE).build();
     }
 
 }

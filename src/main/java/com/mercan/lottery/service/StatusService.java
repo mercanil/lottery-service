@@ -1,7 +1,7 @@
 package com.mercan.lottery.service;
 
 
-import com.mercan.lottery.dto.LineResult;
+import com.mercan.lottery.dto.TicketLineResult;
 import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.exception.TicketNotFoundException;
@@ -33,11 +33,11 @@ public class StatusService {
         ticket.setChecked(true);
         ticketRepository.save(ticket);
 
-        List<LineResult> lineResult = ticket.getTicketLines()
+        List<TicketLineResult> ticketLineResult = ticket.getTicketLines()
                 .stream()
                 .map(ticketLine -> TicketLineMapper.toLineResult(ticketLine, lineResultCalculatorStrategy))
-                .sorted(Comparator.comparing(LineResult::getResult))
+                .sorted(Comparator.comparing(TicketLineResult::getResult))
                 .collect(Collectors.toList());
-        return new TicketResult(ticket, lineResult);
+        return new TicketResult(ticket, ticketLineResult);
     }
 }

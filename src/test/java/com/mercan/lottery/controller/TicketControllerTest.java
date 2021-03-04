@@ -253,4 +253,44 @@ class TicketControllerTest {
 
         verify(ticketService).updateTicket(validTicketId, validNumberOfLines);
     }
+
+    @Test
+    void delete_ticket_expect_success() throws Exception {
+
+        //given
+        long validTicketId = 1L;
+        doNothing().when(ticketService).delete(validTicketId);
+
+        //when
+        this.mockMvc
+                .perform(delete(TICKET_ENDPOINT + "/" + validTicketId )
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNoContent());
+
+
+        verify(ticketService).delete(validTicketId);
+    }
+
+
+    @Test
+    void delete_ticket_expect_exception_when_ticket_does_not_exist() throws Exception {
+
+        //given
+        long invalidTicketId = 3;
+
+        doThrow(new TicketCheckedException("ticket with id:" + invalidTicketId + " has been checked before.")).when(ticketService).delete(invalidTicketId);
+
+        //when
+        this.mockMvc
+                .perform(delete(TICKET_ENDPOINT + "/" + invalidTicketId)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.reasonCode", is(HttpStatus.NOT_FOUND.name())))
+                .andExpect(jsonPath("$.errors[0]", is("ticket with id:" + invalidTicketId + " has been checked before.")));
+
+
+        verify(ticketService).delete(invalidTicketId);
+    }
 }

@@ -4,11 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mercan.lottery.bdd.commons.RequestContext;
 import com.mercan.lottery.bdd.commons.TicketHttpClient;
 import com.mercan.lottery.dto.ApiError;
-import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.repository.TicketRepository;
 import io.cucumber.java.After;
-import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -17,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -25,14 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TicketSteps {
 
     @Autowired
-    protected TicketRepository repository;
+    protected TicketRepository ticketRepository;
     @Autowired
     protected TicketHttpClient ticketHttpClient;
 
 
     @After
     public void afterStep() {
-        repository.deleteAll();
+        ticketRepository.deleteAll();
     }
 
     @When("I want retrieve all tickets")
@@ -54,7 +53,7 @@ public class TicketSteps {
     @Then("I should receive this ticket successfully")
     public void iShouldReceiveThisTicketSuccessfully() {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        Ticket storedTicket = repository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
+        Ticket storedTicket = ticketRepository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
 
         assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
         assertThat(storedTicket.isChecked(), is(ticketResponse.getBody().isChecked()));
@@ -65,7 +64,7 @@ public class TicketSteps {
     @Then("I should receive all tickets")
     public void iShouldReceiveAllTickets() {
         ResponseEntity<List<Ticket>> ticketResponse = RequestContext.getTicketListResult();
-        List<Ticket> storedTicketList = repository.findAll();
+        List<Ticket> storedTicketList = ticketRepository.findAll();
 
         assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
         assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
@@ -85,7 +84,7 @@ public class TicketSteps {
     @Then("Ticket should be stored with {int} lines")
     public void ticketShouldBeStoredWithLines(final int numberOfLines) {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        Ticket storedTicket = repository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
+        Ticket storedTicket = ticketRepository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
 
         assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.CREATED.value()));
         assertThat(ticketResponse.getBody(), is(storedTicket));
@@ -126,7 +125,7 @@ public class TicketSteps {
 
     @Then("I should receive updated ticket with {int} lines")
     public void iShouldReceiveUpdatedTicketWithLines(int totalLines) {
-        Ticket storedTicket = repository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
+        Ticket storedTicket = ticketRepository.findById(RequestContext.getTicketResponse().getBody().getId()).get();
         assertThat(storedTicket.isChecked(), is(false));
         assertThat(storedTicket.getTicketLines(), hasSize(totalLines));
         assertThat(storedTicket.getId(), is(notNullValue()));
@@ -145,6 +144,29 @@ public class TicketSteps {
         }
     }
 
+    @When("I want to delete this ticket")
+    public void iWantToDeleteThisTicket() throws JsonProcessingException {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+
+        ticketHttpClient.delete(ticketResponse.getBody().getId());
+    }
+
+    @Then("Ticket should be deleted")
+    public void ticketShouldBeDeleted() {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        Optional<Ticket> ticket = ticketRepository.findById(ticketResponse.getBody().getId());
+        assertThat(ticket.isPresent() , is(false));
+    }
+
+    @When("I want to delete ticket by invalid {long} id")
+    public void iWantToDeleteTicketByInvalidId(final long ticketId) throws JsonProcessingException {
+        ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
+        ticketHttpClient.delete(ticketId);
+    }
+
+
+
+
 
     @Given("I have no tickets")
     public void iHaveNoTickets() {
@@ -155,7 +177,7 @@ public class TicketSteps {
     @Then("I should receive empty response")
     public void iShouldReceiveEmptyResponse() {
         ResponseEntity<List<Ticket>> ticketResponse = RequestContext.getTicketListResult();
-        List<Ticket> storedTicketList = repository.findAll();
+        List<Ticket> storedTicketList = ticketRepository.findAll();
 
         assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
         assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
@@ -170,6 +192,9 @@ public class TicketSteps {
         assertThat(apiError.getErrors().get(0), containsString(error));
         assertTrue(ticketResponse.getStatusCode().isError());
     }
+
+
+
 
 
 }

@@ -52,4 +52,13 @@ public class TicketService {
         }
         return ticketRepository.save(ticket);
     }
+
+    public void delete(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> {
+            log.info("ticket is not found for id:{}", ticketId);
+            return new TicketNotFoundException("ticket is not found for id " + ticketId);
+        });
+
+        ticketRepository.deleteById(ticketId);
+    }
 }

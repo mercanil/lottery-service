@@ -171,4 +171,38 @@ class TicketServiceTest {
         verify(mockLineGenerator, never()).generateLine();
 
     }
+
+
+    @Test
+    void delete_ticket_expect_success() {
+
+        //given
+        long validTicketId = 1;
+        int numberOfLines = 1;
+        doNothing().when(mockTicketRepository).deleteById(validTicketId);
+        Ticket storedTicket = createTicket(numberOfLines);
+        given(mockTicketRepository.findById(storedTicket.getId())).willReturn(Optional.of(storedTicket));
+
+        //when
+        classUnderTest.delete(validTicketId);
+
+        //then
+        verify(mockTicketRepository).deleteById(validTicketId);
+
+    }
+
+    @Test
+    void delete_ticket_expect_exception_when_ticket_is_not_found() {
+
+        //given
+        long invalidTicketId = 1;
+        given(mockTicketRepository.findById(invalidTicketId)).willReturn(Optional.empty());
+
+
+        //when then
+        Assertions.assertThrows(TicketNotFoundException.class, () -> classUnderTest.delete(invalidTicketId));
+
+    }
+
+
 }

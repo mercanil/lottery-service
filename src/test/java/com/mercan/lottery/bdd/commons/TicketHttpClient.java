@@ -83,4 +83,14 @@ public class TicketHttpClient {
             RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));
         }
     }
+
+    public void delete(long ticketId) throws JsonProcessingException {
+        try {
+            restTemplate.delete(lotteryEndpoint() + "/" + ticketId);
+        } catch (final HttpClientErrorException e) {
+            ApiError apiError = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);
+            RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));
+        }
+
+    }
 }

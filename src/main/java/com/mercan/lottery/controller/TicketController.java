@@ -92,4 +92,21 @@ public class TicketController {
 
         return ResponseEntity.ok(ticket);
     }
+
+
+    @DeleteMapping("/{ticketId}")
+    @Operation(summary = "Update lottery ticket with given number of lines")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Ticket is deleted", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}),
+            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
+
+    })
+    public ResponseEntity<Void> delete(@PathVariable(value = "ticketId")
+                                       @Parameter(description = "Ticket id to be updated ", name = "ticketId")
+                                               Long ticketId) {
+        log.info("delete lottery ticketId: {}", ticketId);
+        ticketService.delete(ticketId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

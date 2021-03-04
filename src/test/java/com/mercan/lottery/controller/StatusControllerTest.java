@@ -47,7 +47,7 @@ class StatusControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ticket.checked", is(false)))
+                .andExpect(jsonPath("$.checked", is(false)))
                 .andExpect(jsonPath("$.results", not(empty())));
 
         verify(statusService).checkStatus(requestedTicketId);

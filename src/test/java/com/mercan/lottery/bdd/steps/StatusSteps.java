@@ -37,10 +37,10 @@ public class StatusSteps {
         ResponseEntity<TicketResult> ticketResultResponse =  RequestContext.getTicketResultResponse();
         TicketResult ticketResult = ticketResultResponse.getBody();
         assertThat(ticketResultResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
-        assertThat(ticketResult.getTicket().isChecked(), is(true));
+        assertThat(ticketResult.isChecked(), is(true));
 
         assertThat(ticketResult.getResults(), hasSize(totalLines));
-        assertThat(ticketResult.getTicket().getId(), is(notNullValue()));
+        assertThat(ticketResult.getId(), is(notNullValue()));
 
     }
 

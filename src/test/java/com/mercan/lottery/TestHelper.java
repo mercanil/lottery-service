@@ -34,7 +34,7 @@ public class TestHelper {
     public static TicketResult createTicketResult() {
         Ticket createdTicket = createTicket(TEST_LINE_COUNT);
         List<LineResult> createdLineResultList = createLineResultList(TEST_LINE_COUNT);
-        return TicketResult.builder().ticket(createdTicket).results(createdLineResultList).build();
+        return TicketResult.builder().id(createdTicket.getId()).results(createdLineResultList).build();
     }
 
     private static List<LineResult> createLineResultList(int numberOfLines) {

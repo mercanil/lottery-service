@@ -18,13 +18,12 @@ import java.util.List;
 public class TicketResult {
 
     private List<LineResult> results = new ArrayList<>();
-    private Ticket ticket;
+    private long id;
+    private boolean isChecked;
 
-    public TicketResult(Ticket ticket, LineResultCalculatorStrategy lineResultCalculatorStrategy) {
-        for (TicketLine line : ticket.getTicketLines()) {
-            int result = lineResultCalculatorStrategy.calculateResult(line);
-            results.add(new LineResult(line, result));
-        }
-        this.ticket = ticket;
+    public TicketResult(Ticket ticket ,List<LineResult> lineResults ) {
+        this.results = lineResults;
+        this.id = ticket.getId();
+        this.isChecked = ticket.isChecked();
     }
 }

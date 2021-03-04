@@ -48,8 +48,8 @@ class StatusServiceTest {
         TicketResult ticketResult = classUnderTest.checkStatus(storedTicket.getId());
 
         //then
-        assertThat(ticketResult.getTicket().isChecked(), is(true));
-        assertThat(ticketResult.getTicket().getTicketLines(), hasSize(numberOfLines));
+        assertThat(ticketResult.isChecked(), is(true));
+        assertThat(ticketResult.getResults(), hasSize(numberOfLines));
         verify(mockTicketRepository).findById(storedTicket.getId());
 
     }

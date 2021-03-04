@@ -1,14 +1,20 @@
 package com.mercan.lottery.service;
 
 
+import com.mercan.lottery.dto.LineResult;
 import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.exception.TicketNotFoundException;
 import com.mercan.lottery.repository.TicketRepository;
 import com.mercan.lottery.service.strategy.LineResultCalculatorStrategy;
+import com.mercan.lottery.utils.TicketLineMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,12 @@ public class StatusService {
         });
         ticket.setChecked(true);
         ticketRepository.save(ticket);
-        return new TicketResult(ticket, lineResultCalculatorStrategy);
+
+        List<LineResult> lineResult = ticket.getTicketLines()
+                .stream()
+                .map(ticketLine -> TicketLineMapper.toLineResult(ticketLine, lineResultCalculatorStrategy))
+                .sorted(Comparator.comparing(LineResult::getResult))
+                .collect(Collectors.toList());
+        return new TicketResult(ticket, lineResult);
     }
 }

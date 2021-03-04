@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -51,5 +53,9 @@ public class TicketService {
         ticket.setChecked(true);
         ticketRepository.save(ticket);
         return new TicketResult(ticket, lineResultCalculatorStrategy);
+    }
+
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
     }
 }

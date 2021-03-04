@@ -19,10 +19,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Min;
+import java.util.List;
 
 
 @RestController
-@RequestMapping(value = "/api/lottery/ticket", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/ticket", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Slf4j
 @Validated
@@ -64,6 +65,17 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
     }
 
+    @Operation(summary = "Get all lottery tickets")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All tickets are retrieved", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})})
+
+    @GetMapping()
+    public ResponseEntity<List<Ticket>> getAllTickets() {
+        log.info("get lottery tickets");
+        List<Ticket> ticketList = ticketService.getAllTickets();
+        return ResponseEntity.status(HttpStatus.OK).body(ticketList);
+    }
+
 
     @PutMapping()
     @Operation(summary = "Update lottery ticket with given number of lines")
@@ -82,7 +94,7 @@ public class TicketController {
                                                        Long ticketId) {
         log.info("update lottery ticketId: {} line numbers :{}", ticketId, numberOfLines);
         Ticket ticket = ticketService.updateTicket(ticketId, numberOfLines);
-        log.info("update lottery lticketId :{} result:{}", ticketId, ticket);
+        log.info("update lottery ticketId :{} result:{}", ticketId, ticket);
 
         return ResponseEntity.ok(ticket);
     }

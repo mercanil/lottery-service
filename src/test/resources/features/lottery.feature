@@ -14,6 +14,16 @@ Feature: Lottery Features
     Then  I should receive an error contains "numberOfLines can not be lower than 1. Input value:{-2}"
 
 
+  Scenario: Get all tickets
+    Given I have 2 tickets with 2 lines each
+    When  I want retrieve all tickets
+    Then  I should receive all tickets
+
+
+  Scenario: Get all tickets when there is no ticket
+    When  I want retrieve all tickets
+    Then  I should receive empty response
+
   Scenario: Update ticket for an existing ticket
     Given I have a ticket with 2 lines
     When  I want to add new 3 lines to this ticket

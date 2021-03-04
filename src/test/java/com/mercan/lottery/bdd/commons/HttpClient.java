@@ -16,6 +16,8 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 import static io.cucumber.spring.CucumberTestContext.SCOPE_CUCUMBER_GLUE;
 
 @Component
@@ -26,7 +28,7 @@ public class HttpClient {
     ObjectMapper objectMapper;
 
     private final String SERVER_URL = "http://localhost";
-    private final String LOTTERY_BASE_PATH = "/api/lottery/ticket";
+    private final String LOTTERY_BASE_PATH = "/ticket";
     private final String LOTTERY_CREATE_ENDPOINT = LOTTERY_BASE_PATH + "?numberOfLines={numberOfLines}";
     private final String LOTTERY_UPDATE_ENDPOINT = LOTTERY_BASE_PATH + "?numberOfLines={numberOfLines}&ticketId={ticketId}";
     private final String LOTTERY_GET_ENDPOINT = LOTTERY_BASE_PATH + "/check?ticketId={ticketId}";
@@ -46,6 +48,10 @@ public class HttpClient {
 
     private String lotteryGetEndpoint() {
         return SERVER_URL + ":" + port + LOTTERY_GET_ENDPOINT;
+    }
+
+    private String lotteryGetTicketEndpoint() {
+        return SERVER_URL + ":" + port + LOTTERY_BASE_PATH;
     }
 
 
@@ -74,6 +80,18 @@ public class HttpClient {
 
             ResponseEntity<TicketResult> ticketResultResponseEntity = restTemplate.getForEntity(lotteryGetEndpoint(), TicketResult.class, ticketId);
             RequestContext.storeTicketResultResponse(ticketResultResponseEntity);
+
+        } catch (final HttpClientErrorException e) {
+            ApiError apiError = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);
+            RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));
+        }
+    }
+
+    public void getAllTickets() throws JsonProcessingException {
+        try {
+
+            ResponseEntity<List> ticketResultResponseEntity = restTemplate.getForEntity(lotteryGetTicketEndpoint(), List.class);
+            RequestContext.storeTicketListResult(ticketResultResponseEntity);
 
         } catch (final HttpClientErrorException e) {
             ApiError apiError = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);

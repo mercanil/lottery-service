@@ -7,6 +7,7 @@ import com.mercan.lottery.dto.ApiError;
 import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.repository.TicketRepository;
+import io.cucumber.java.After;
 import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -14,6 +15,8 @@ import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -28,10 +31,49 @@ public class StepDefinitions {
     TicketRepository repository;
 
 
+    @After
+    public void afterStep() {
+        repository.deleteAll();
+    }
+
     @Given("I have a ticket with {int} lines")
     public void iHaveATicketWithLines(final int numberOfLines) throws JsonProcessingException {
         httpClient.post(numberOfLines);
     }
+
+    @Given("I have {int} tickets with {int} lines each")
+    public void iHaveATicketWithLines(final int ticketCount, final int numberOfLines) throws JsonProcessingException {
+        for (int i = 0; i < ticketCount; i++) {
+            iHaveATicketWithLines(numberOfLines);
+        }
+    }
+
+    @When("I want retrieve all tickets")
+    public void iWantRetrieveAllTickets() throws JsonProcessingException {
+        httpClient.getAllTickets();
+    }
+
+
+    @Then("I should receive all tickets")
+    public void iShouldReceiveAllTickets() {
+        ResponseEntity<List<Ticket>> ticketResponse = RequestContext.getTicketListResult();
+        List<Ticket> storedTicketList = repository.findAll();
+
+        assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
+        assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
+    }
+
+    @Then("I should receive empty response")
+    public void iShouldReceiveEmptyResponse() {
+        ResponseEntity<List<Ticket>> ticketResponse = RequestContext.getTicketListResult();
+        List<Ticket> storedTicketList = repository.findAll();
+
+        assertThat(ticketResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
+        assertThat(ticketResponse.getBody().size(), is(storedTicketList.size()));
+        assertThat(ticketResponse.getBody(), empty());
+        assertThat(storedTicketList, empty());
+    }
+
 
     @When("I want to create a ticket with {int} lines")
     public void iWantToCreateATicketWithLines(final int numberOfLines) throws JsonProcessingException {

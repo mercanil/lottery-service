@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static com.mercan.lottery.TestHelper.createTicket;
 import static com.mercan.lottery.TestHelper.createTicketResult;
 import static org.hamcrest.Matchers.*;
@@ -27,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TicketController.class)
 @AutoConfigureMockMvc
 class TicketControllerTest {
-    private static final String TICKET_ENDPOINT = "/api/lottery/ticket";
+    private static final String TICKET_ENDPOINT = "/ticket";
     private static final String CHECK_TICKET_ENDPOINT = TICKET_ENDPOINT + "/check";
 
     @MockBean
@@ -91,6 +94,30 @@ class TicketControllerTest {
 
         verify(ticketService, never()).generateTicket(invalidNumberOfLines);
     }
+
+
+    @Test
+    void get_ticket_list_expect_success() throws Exception {
+
+        //given
+        int requestedNumberOfLines = 2;
+        Ticket expectedTicket = createTicket(requestedNumberOfLines);
+        List<Ticket> expectedResponse = Arrays.asList(expectedTicket);
+        when(ticketService.getAllTickets()).thenReturn(expectedResponse);
+
+        //when
+        this.mockMvc
+                .perform(get(TICKET_ENDPOINT)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(expectedResponse.size())))
+                .andExpect(jsonPath("[0].checked", is(false)))
+                .andExpect(jsonPath("[0].ticketLines", hasSize(requestedNumberOfLines)));
+        verify(ticketService).getAllTickets();
+    }
+
+
 
     @Test
     void update_ticket_expect_success() throws Exception {

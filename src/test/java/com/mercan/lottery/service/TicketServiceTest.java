@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.mercan.lottery.TestHelper.createTicket;
@@ -61,6 +63,23 @@ class TicketServiceTest {
         assertThat(ticket.getTicketLines(), hasSize(numberOfLines));
         verify(mockTicketFactory, times(1)).generateTicket(numberOfLines);
 
+    }
+
+    @Test
+    void get_all_tickets_expect_success() {
+        //given
+        int numberOfLines = 1;
+        Ticket storedTicket = createTicket(numberOfLines);
+        List<Ticket> storedTicketList = Arrays.asList(storedTicket);
+        given(mockTicketRepository.findAll()).willReturn(storedTicketList);
+
+        //when
+        List<Ticket> tickets = classUnderTest.getAllTickets();
+
+        //then
+        assertThat(tickets.size(), is(storedTicketList.size()));
+        assertThat(tickets.get(0), is(storedTicket));
+        verify(mockTicketRepository).findAll();
     }
 
     @Test

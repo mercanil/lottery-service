@@ -46,7 +46,6 @@ public class TicketHttpClient {
         try {
             ResponseEntity ticketResponseEntity = restTemplate.postForEntity(lotteryEndpoint() + "?numberOfLines={numberOfLines}", null, Ticket.class, numberOfLines);
             RequestContext.storeTicketResponse(ticketResponseEntity);
-
         } catch (final HttpClientErrorException e) {
             ApiError apiError = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);
             RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));
@@ -64,10 +63,8 @@ public class TicketHttpClient {
 
     public void getAllTickets() throws JsonProcessingException {
         try {
-
             ResponseEntity<List> ticketResultResponseEntity = restTemplate.getForEntity(lotteryEndpoint(), List.class);
             RequestContext.storeTicketListResult(ticketResultResponseEntity);
-
         } catch (final HttpClientErrorException e) {
             ApiError apiError = objectMapper.readValue(e.getResponseBodyAsString(), ApiError.class);
             RequestContext.storeErrorResponse(new ResponseEntity<>(apiError, e.getStatusCode()));

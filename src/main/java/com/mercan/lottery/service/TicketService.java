@@ -55,7 +55,6 @@ public class TicketService {
         ticketRepository.deleteById(ticketId);
     }
 
-
     public Ticket getTicket(Long ticketId) {
         return ticketRepository.findById(ticketId).orElseThrow(() -> {
             log.info(String.format(TICKET_NOT_FOUND, ticketId));

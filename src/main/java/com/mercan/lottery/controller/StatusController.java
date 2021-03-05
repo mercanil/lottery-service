@@ -29,8 +29,7 @@ public class StatusController {
     @Operation(summary = "Check status of lottery ticket by given id ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Result of ticket and also sets status of ticket as checked", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = TicketResult.class))}),
-            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),
-            @ApiResponse(responseCode = "404", description = "Missing or incorrect parameter check response", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
+            @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))})})
     @PutMapping(value = "/{ticketId}")
     public ResponseEntity<TicketResult> checkStatus(@PathVariable(value = "ticketId")
                                                     @Parameter(description = "Ticket id to be checked", name = "ticketId")

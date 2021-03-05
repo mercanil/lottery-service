@@ -7,7 +7,7 @@ import com.mercan.lottery.service.strategy.LineResultCalculatorStrategy;
 public class TicketLineMapper {
 
     private TicketLineMapper() {
-        //NOT CALLED
+        //DO NOT CALL
     }
 
     public static TicketLineResult toLineResult(TicketLine line, LineResultCalculatorStrategy lineResultCalculatorStrategy) {

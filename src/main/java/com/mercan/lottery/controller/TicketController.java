@@ -95,7 +95,7 @@ public class TicketController {
 
 
     @DeleteMapping("/{ticketId}")
-    @Operation(summary = "Update lottery ticket with given number of lines")
+    @Operation(summary = "Delete lottery ticket with given ticket id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Ticket is deleted", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)}),
             @ApiResponse(responseCode = "404", description = "Ticket is not found", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiError.class))}),

@@ -16,8 +16,8 @@ RULES
 
 - [API](#API)
 - [Requirements](#Requirements)
-- [Getting Started](#Getting Started)
-- [Road Map](#Road Map)
+- [Getting Started](#Getting-Started)
+- [Road Map](#Road-Map)
 - [Credits](#Credits)
 ## API
 ![Alt text](./swagger/swagger-ss.png?raw=true "Optional Title")

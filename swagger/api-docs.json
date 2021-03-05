@@ -1,0 +1,345 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/ticket/{ticketId}": {
+      "get": {
+        "tags": [
+          "ticket-controller"
+        ],
+        "summary": "Get lottery ticket for given id",
+        "operationId": "getTicket",
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "Ticket id to be updated ",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Ticket is not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "All tickets are retrieved",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "ticket-controller"
+        ],
+        "summary": "Update lottery ticket with given number of lines",
+        "operationId": "updateTicket",
+        "parameters": [
+          {
+            "name": "numberOfLines",
+            "in": "query",
+            "description": "Number of lines to be added to the stored ticket",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "Ticket id to be updated ",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket is updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ticket is checked before",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or incorrect parameter check response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ticket-controller"
+        ],
+        "summary": "Update lottery ticket with given number of lines",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "Ticket id to be updated ",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Ticket is not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Ticket is deleted",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/status/{ticketId}": {
+      "put": {
+        "tags": [
+          "status-controller"
+        ],
+        "summary": "Check status of lottery ticket by given id ",
+        "operationId": "checkStatus",
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "Ticket id to be checked",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result of ticket and also sets status of ticket as checked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Missing or incorrect parameter check response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ticket": {
+      "get": {
+        "tags": [
+          "ticket-controller"
+        ],
+        "summary": "Get all lottery tickets",
+        "operationId": "getAllTickets",
+        "responses": {
+          "200": {
+            "description": "All tickets are retrieved",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ticket-controller"
+        ],
+        "summary": "Create lottery ticket with given number of lines",
+        "operationId": "createTicket",
+        "parameters": [
+          {
+            "name": "numberOfLines",
+            "in": "query",
+            "description": "Number of lines to be added to the stored ticket",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Missing or incorrect parameter check response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Ticket is created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ticket"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Ticket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ticketLines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TicketLine"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "checked": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TicketLine": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "numbers": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "reasonCode": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "TicketLineResult": {
+        "type": "object",
+        "properties": {
+          "line": {
+            "$ref": "#/components/schemas/TicketLine"
+          },
+          "result": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TicketResult": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TicketLineResult"
+            }
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "checked": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

@@ -29,7 +29,6 @@ class StatusControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @MockBean
     StatusService statusService;
 

@@ -19,7 +19,7 @@ public class TicketResult {
     private long id;
     private boolean isChecked;
 
-    public TicketResult(Ticket ticket ,List<TicketLineResult> ticketLineResults) {
+    public TicketResult(Ticket ticket, List<TicketLineResult> ticketLineResults) {
         this.results = ticketLineResults;
         this.id = ticket.getId();
         this.isChecked = ticket.isChecked();

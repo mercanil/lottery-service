@@ -13,7 +13,7 @@ class ResultCalculatorTest {
 
 
     @Test
-     void test_result_of_numbers_when_sum_is_two() {
+    void test_result_of_numbers_when_sum_is_two() {
         assertThat(resultCalculator.calculateResult(new TicketLine(0, 1, 1)), is(10));
         assertThat(resultCalculator.calculateResult(new TicketLine(1, 0, 1)), is(10));
         assertThat(resultCalculator.calculateResult(new TicketLine(2, 0, 0)), is(10));
@@ -23,7 +23,7 @@ class ResultCalculatorTest {
     }
 
     @Test
-     void test_result_of_numbers_when_all_values_are_same() {
+    void test_result_of_numbers_when_all_values_are_same() {
         assertThat(resultCalculator.calculateResult(new TicketLine(1, 1, 1)), is(5));
         assertThat(resultCalculator.calculateResult(new TicketLine(0, 0, 0)), is(5));
         assertThat(resultCalculator.calculateResult(new TicketLine(2, 2, 2)), is(5));
@@ -31,7 +31,7 @@ class ResultCalculatorTest {
     }
 
     @Test
-     void test_result_of_numbers_when_2_and_3_are_different_from_1() {
+    void test_result_of_numbers_when_2_and_3_are_different_from_1() {
         assertThat(resultCalculator.calculateResult(new TicketLine(1, 0, 2)), is(1));
         assertThat(resultCalculator.calculateResult(new TicketLine(1, 2, 0)), is(1));
         assertThat(resultCalculator.calculateResult(new TicketLine(1, 2, 2)), is(1));
@@ -45,7 +45,7 @@ class ResultCalculatorTest {
     }
 
     @Test
-     void test_result_of_numbers_when_2_and_3_are_different_from_1_but_sum_is_2() {
+    void test_result_of_numbers_when_2_and_3_are_different_from_1_but_sum_is_2() {
         assertThat(resultCalculator.calculateResult(new TicketLine(0, 1, 1)), is(10));
         assertThat(resultCalculator.calculateResult(new TicketLine(0, 2, 0)), is(10));
 

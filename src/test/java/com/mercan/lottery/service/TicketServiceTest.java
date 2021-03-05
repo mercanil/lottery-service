@@ -4,10 +4,8 @@ import com.mercan.lottery.entity.Ticket;
 import com.mercan.lottery.entity.TicketFactory;
 import com.mercan.lottery.exception.TicketCheckedException;
 import com.mercan.lottery.exception.TicketNotFoundException;
-import com.mercan.lottery.dto.TicketResult;
 import com.mercan.lottery.repository.TicketRepository;
 import com.mercan.lottery.service.strategy.LineGeneratorStrategy;
-import com.mercan.lottery.service.strategy.LineResultCalculatorStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,7 +77,6 @@ class TicketServiceTest {
         verify(mockTicketRepository).findAll();
     }
 
-
     @Test
     void get_ticket_expect_success() {
         //given
@@ -150,7 +147,6 @@ class TicketServiceTest {
 
     }
 
-
     @Test
     void update_ticket_expect_exception_when_ticket_is_already_checked() {
 
@@ -171,7 +167,6 @@ class TicketServiceTest {
         verify(mockLineGenerator, never()).generateLine();
 
     }
-
 
     @Test
     void delete_ticket_expect_success() {
@@ -201,6 +196,4 @@ class TicketServiceTest {
         Assertions.assertThrows(TicketNotFoundException.class, () -> classUnderTest.delete(invalidTicketId));
 
     }
-
-
 }

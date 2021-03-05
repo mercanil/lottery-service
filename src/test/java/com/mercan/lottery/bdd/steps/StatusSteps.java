@@ -34,7 +34,7 @@ public class StatusSteps {
 
     @Then("I should receive ticket with {int} lines contains results")
     public void iShouldReceiveTicketWithLinesContainsResult(int totalLines) {
-        ResponseEntity<TicketResult> ticketResultResponse =  RequestContext.getTicketResultResponse();
+        ResponseEntity<TicketResult> ticketResultResponse = RequestContext.getTicketResultResponse();
         TicketResult ticketResult = ticketResultResponse.getBody();
         assertThat(ticketResultResponse.getStatusCodeValue(), is(HttpStatus.OK.value()));
         assertThat(ticketResult.isChecked(), is(true));

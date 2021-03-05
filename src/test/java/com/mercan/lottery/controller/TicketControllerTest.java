@@ -263,7 +263,7 @@ class TicketControllerTest {
 
         //when
         this.mockMvc
-                .perform(delete(TICKET_ENDPOINT + "/" + validTicketId )
+                .perform(delete(TICKET_ENDPOINT + "/" + validTicketId)
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNoContent());

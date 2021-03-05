@@ -80,7 +80,6 @@ public class TicketSteps {
         ticketHttpClient.post(null);
     }
 
-
     @Then("Ticket should be stored with {int} lines")
     public void ticketShouldBeStoredWithLines(final int numberOfLines) {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
@@ -93,13 +92,11 @@ public class TicketSteps {
         assertThat(storedTicket.getId(), is(notNullValue()));
     }
 
-
     @When("I want to add new {int} lines to this ticket")
     public void iWantToAddnewLinesToThisTicket(int additionalLines) throws JsonProcessingException {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
         ticketHttpClient.put(additionalLines, ticketResponse.getBody().getId());
     }
-
 
     @When("I want to add new lines to this ticket but forget to add numberOfLines")
     public void iWantToAddNewLinesToThisTicketButForgetToAddNumberOfLines() throws JsonProcessingException {
@@ -131,7 +128,6 @@ public class TicketSteps {
         assertThat(storedTicket.getId(), is(notNullValue()));
     }
 
-
     @Given("I have a ticket with {int} lines")
     public void iHaveATicketWithLines(final int numberOfLines) throws JsonProcessingException {
         ticketHttpClient.post(numberOfLines);
@@ -155,7 +151,7 @@ public class TicketSteps {
     public void ticketShouldBeDeleted() {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
         Optional<Ticket> ticket = ticketRepository.findById(ticketResponse.getBody().getId());
-        assertThat(ticket.isPresent() , is(false));
+        assertThat(ticket.isPresent(), is(false));
     }
 
     @When("I want to delete ticket by invalid {long} id")
@@ -165,14 +161,10 @@ public class TicketSteps {
     }
 
 
-
-
-
     @Given("I have no tickets")
     public void iHaveNoTickets() {
         //DO NOTHING
     }
-
 
     @Then("I should receive empty response")
     public void iShouldReceiveEmptyResponse() {
@@ -192,9 +184,4 @@ public class TicketSteps {
         assertThat(apiError.getErrors().get(0), containsString(error));
         assertTrue(ticketResponse.getStatusCode().isError());
     }
-
-
-
-
-
 }

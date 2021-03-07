@@ -60,7 +60,7 @@ public class TicketHttpClient {
         }
     }
 
-    public void getAllTickets() throws JsonProcessingException {
+    public void getAll() throws JsonProcessingException {
         try {
             ResponseEntity<List> ticketResultResponseEntity = restTemplate.getForEntity(lotteryEndpoint(), List.class);
             RequestContext.storeTicketListResult(ticketResultResponseEntity);
@@ -70,7 +70,7 @@ public class TicketHttpClient {
         }
     }
 
-    public void getTicket(long ticketId) throws JsonProcessingException {
+    public void get(long ticketId) throws JsonProcessingException {
         try {
             ResponseEntity<Ticket> ticketResponseEntity = restTemplate.getForEntity(lotteryEndpoint() + "/" + ticketId, Ticket.class);
             RequestContext.storeTicketResponse(ticketResponseEntity);

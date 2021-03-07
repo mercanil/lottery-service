@@ -36,18 +36,18 @@ public class TicketSteps {
 
     @When("I want retrieve all tickets")
     public void iWantRetrieveAllTickets() throws JsonProcessingException {
-        ticketHttpClient.getAllTickets();
+        ticketHttpClient.getAll();
     }
 
     @When("I want retrieve this ticket")
     public void iWantToRetrieveThisTicket() throws JsonProcessingException {
         ResponseEntity<Ticket> ticketResponse = RequestContext.getTicketResponse();
-        ticketHttpClient.getTicket(ticketResponse.getBody().getId());
+        ticketHttpClient.get(ticketResponse.getBody().getId());
     }
 
     @When("I want retrieve this ticket with invalid id {long}")
     public void iWantRetrieveThisTicketWithInvalidId(final long invalidTicketId) throws JsonProcessingException {
-        ticketHttpClient.getTicket(invalidTicketId);
+        ticketHttpClient.get(invalidTicketId);
     }
 
     @Then("I should receive this ticket successfully")

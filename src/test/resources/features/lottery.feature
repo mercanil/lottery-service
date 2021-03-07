@@ -64,6 +64,12 @@ Feature: Lottery Features
     When  I want to add new 3 lines to this ticket
     Then  I should receive an error contains "has been checked before."
 
+
+  Scenario: Delete ticket
+    Given I have a ticket with 2 lines
+    When  I want to delete this ticket
+    Then  Ticket should be deleted
+
   Scenario: Delete ticket
     Given I have a ticket with 2 lines
     When  I want to delete ticket by invalid -1 id

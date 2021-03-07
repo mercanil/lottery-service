@@ -10,10 +10,10 @@ services:
       - POSTGRES_USER=dbuser
       - POSTGRES_DB=testdb
 
-  springbootapp:
-    restart: always
+  lottery:
+    restart: on-failure
     build: .
-    container_name: springbootapp
+    container_name: lottery
     ports:
       - 8080:8080
     depends_on:

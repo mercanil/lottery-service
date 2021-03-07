@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mercan</groupId>
-    <artifactId>lottery</artifactId>
+    <artifactId>lottery-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>lottery</name>
     <description>Lottery Project</description>
